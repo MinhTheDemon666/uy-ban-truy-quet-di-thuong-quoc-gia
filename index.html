@@ -19,14 +19,15 @@ body::before{content:"";position:fixed;inset:0;z-index:900;pointer-events:none;b
 .crt-overlay{position:fixed;inset:0;z-index:950;pointer-events:none;overflow:hidden}
 .crt-overlay::before{content:"";position:absolute;inset:-40px 0 0 0;will-change:transform;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.18) 3px,rgba(0,0,0,.18) 4px);opacity:.7;animation:drift 12s linear infinite}
 .crt-overlay::after{content:"";position:absolute;inset:-5%;will-change:transform;background-image:repeating-radial-gradient(circle at 17% 32%,rgba(255,255,255,.13) 0,transparent 1px,transparent 3px),repeating-radial-gradient(circle at 73% 61%,rgba(140,255,155,.08) 0,transparent 1px,transparent 4px);background-size:5px 5px,7px 7px;opacity:.13;animation:grain .25s steps(2) infinite}
-.tracking-band{position:fixed;left:0;top:-30%;width:100%;height:90px;z-index:970;pointer-events:none;opacity:0;background:linear-gradient(to bottom,transparent,rgba(140,255,155,.035) 20%,rgba(255,255,255,.07) 50%,rgba(140,255,155,.035) 80%,transparent);will-change:transform;animation:track 13s linear infinite}
+.tracking-band{
+    display:none !important;
+}
 #flick{position:fixed;inset:0;z-index:960;pointer-events:none;background:#000;opacity:0;animation:flickO 7s infinite}
 @keyframes flickO{0%,18%,20%,55%,57%,100%{opacity:0}19%{opacity:.03}56%{opacity:.06}82%{opacity:.02}}
 body.dead #flick{display:none}
 .lite .crt-overlay::after,.lite .tracking-band,.lite #flick{display:none}
 @keyframes drift{to{transform:translateY(40px)}}
 @keyframes grain{0%{transform:translate(0,0)}50%{transform:translate(2%,-2%)}100%{transform:translate(-1%,1%)}}
-@keyframes track{0%,70%{transform:translateY(0);opacity:0}72%{opacity:.7}76%{transform:translateY(140vh);opacity:.35}77%,100%{transform:translateY(140vh);opacity:0}}
 
 #power{position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:0;background:var(--white-green);box-shadow:0 0 60px 20px rgba(140,255,155,.6)}
 #power.on{animation:pon 1s ease-out forwards}
@@ -478,6 +479,36 @@ textarea { resize: none !important; }
 
 .inv-back { margin-top: 4px; }
 
+/* Khung Admin ở màn chọn ngôn ngữ & thanh dịch chuyển */
+#lang-admin-btn {
+  margin-top: 14px; min-width: auto; padding: 5px 12px; font-size: 11px; letter-spacing: 2px;
+  border: 1px dashed rgba(255, 209, 102, 0.45); color: rgba(255, 209, 102, 0.8); background: rgba(255, 209, 102, 0.03);
+}
+#lang-admin-btn:hover { background: #ffd166; color: #000; border-color: #ffd166; }
+#lang-admin-box {
+  margin-top: 10px; padding: 12px; border: 1px solid #ffd166; background: rgba(5, 12, 8, 0.96);
+  display: flex; flex-direction: column; gap: 8px; width: min(250px, 85vw);
+}
+#lang-admin-box input {
+  width: 100%; background: rgba(255, 209, 102, 0.05); border: 1px solid rgba(255, 209, 102, 0.35);
+  border-bottom-color: #ffd166; color: #ffd166; padding: 7px; text-align: center; font-family: inherit; font-size: 12px; outline: none;
+}
+.lang-admin-actions { display: flex; gap: 6px; }
+.lang-admin-actions button { flex: 1; min-width: 0; padding: 6px; font-size: 10px; border-color: #ffd166; color: #ffd166; }
+.lang-admin-actions button:hover { background: #ffd166; color: #000; }
+#lang-admin-err { color: var(--red); font-size: 10px; min-height: 12px; }
+
+#admin-dock {
+  position: fixed; top: 14px; right: 14px; z-index: 9900; width: 205px;
+  background: rgba(5, 12, 8, 0.95); border: 1px solid #ffd166; padding: 8px;
+  display: flex; flex-direction: column; gap: 5px; font-size: 10px;
+}
+#admin-dock.collapsed .admin-body { display: none; }
+.admin-head { display: flex; justify-content: space-between; color: #ffd166; font-weight: bold; border-bottom: 1px dashed rgba(255, 209, 102, 0.35); padding-bottom: 5px; cursor: pointer; }
+.admin-body { display: flex; flex-direction: column; gap: 4px; margin-top: 3px; }
+.admin-btn { width: 100%; min-width: 0; padding: 6px 8px; font-size: 10px; text-align: left; border: 1px solid rgba(255, 209, 102, 0.4); color: #ffd166; }
+.admin-btn:hover { background: #ffd166; color: #000; }
+
 @media(max-width:760px) {
   .inv-top-bar { flex-direction: column; }
   .inv-teams { max-height: 130px; }
@@ -485,6 +516,8 @@ textarea { resize: none !important; }
 }
 @media(max-width:480px){.button-group{flex-direction:column;width:min(250px,80vw)}button{width:100%}.access-title{font-size:30px}}
 @media(prefers-reduced-motion:reduce){body,#flick,.crt-overlay::before,.crt-overlay::after,.tracking-band,.screen{animation:none!important}}
+
+
 </style>
 </head>
 <body>
@@ -496,6 +529,17 @@ textarea { resize: none !important; }
 <div id="syncbar"></div>
 <canvas id="static"></canvas>
 <div id="power"></div>
+
+<div id="admin-dock" class="hidden">
+  <div class="admin-head" id="admin-toggle"><span>★ ADMIN: M.T.D</span><span id="admin-arrow">[−]</span></div>
+  <div class="admin-body">
+    <button type="button" class="admin-btn" data-warp="lang">→ NGÔN NGỮ</button>
+    <button type="button" class="admin-btn" data-warp="verify">→ XÁC MINH</button>
+    <button type="button" class="admin-btn" data-warp="login">→ ĐĂNG NHẬP</button>
+    <button type="button" class="admin-btn" data-warp="dept">→ MENU CHỌN CỤC</button>
+    <button type="button" class="admin-btn" data-warp="investigate">→ CỤC ĐIỀU TRA</button>
+  </div>
+</div>
 
 <div id="stage"><div class="watermark">MTD</div>
 
@@ -512,6 +556,18 @@ textarea { resize: none !important; }
 <h1 class="question">SELECT LANGUAGE<br>CHỌN NGÔN NGỮ</h1>
 <p class="description">Select your language to continue.<br>Chọn ngôn ngữ để tiếp tục.</p>
 <div class="button-group"><button id="lang-en">ENGLISH</button><button id="lang-vi">TIẾNG VIỆT</button></div>
+
+<button type="button" id="lang-admin-btn">[ ADMIN ]</button>
+<div id="lang-admin-box" class="hidden">
+  <input id="lang-admin-user" type="text" placeholder="ADMIN ID" autocomplete="off" spellcheck="false">
+  <input id="lang-admin-pass" type="password" placeholder="PASSCODE" autocomplete="off">
+  <div id="lang-admin-err"></div>
+  <div class="lang-admin-actions">
+    <button type="button" id="lang-admin-ok">MỞ KHÓA</button>
+    <button type="button" id="lang-admin-cancel" class="back">ĐÓNG</button>
+  </div>
+</div>
+
 </section>
 
 <section id="verify-screen" class="screen hidden">
@@ -554,10 +610,10 @@ textarea { resize: none !important; }
 <h1 class="question" data-i18n="deptTitle"></h1>
 <p class="description" data-i18n="deptDesc"></p>
 <div class="button-group" style="flex-direction:column; gap:12px;">
-  <button id="dept-process" data-i18n="dept1"></button>
   <button id="dept-investigate" data-i18n="dept2"></button>
-  <button id="dept-logistics" data-i18n="dept3"></button>
+  <button id="dept-process" data-i18n="dept1"></button>
   <button id="dept-security" data-i18n="dept4"></button>
+  <button id="dept-logistics" data-i18n="dept3"></button>
 </div>
 <div class="button-group" style="margin-top:10px"><button class="back" data-back data-i18n="ret"></button></div>
 </section>
@@ -574,11 +630,11 @@ const I18N={
 en:{verifyTop:"INTERNAL ACCESS GATEWAY",restricted:"⚠ RESTRICTED ACCESS",verifyTitle:"IDENTITY VERIFICATION",verifyDesc:"A new connection has been detected.<br>Please confirm your access status before continuing.",verifyQ:"ARE YOU AN EMPLOYEE OF THE COMMITTEE?",yes:"YES",no:"NO",ret:"← RETURN",loginTop:"EMPLOYEE AUTHENTICATION",loginTitle:"STAFF LOGIN",loginDesc:"Enter your registered name and passcode.",nameLabel:"FULL NAME",passLabel:"PASSCODE",hint:"HINT // PASSCODE: 0000",submit:"AUTHENTICATE",nameEmpty:"PLEASE ENTER YOUR NAME.",exitHead:"ACCESS RESTRICTED",disc:"DISCONNECT",welcome:"WELCOME,",initMenu:"INITIALIZING MAIN MENU",initSub:"PLEASE DO NOT CLOSE THIS WINDOW",
 exitsNo:[{m:"You are not within the personnel authorized for access.",s:"This terminal is restricted to registered staff.<br>Your connection has been noted."},{m:"You have returned.",s:"This terminal does not answer questions.<br>Please disconnect."},{m:"We can see that you are still here.",s:"It is late. You should sleep.<br>Please disconnect."}],
 exitsPass:[{m:"Credentials not recognized.",s:"The information you provided does not match our records.<br>Your attempt has been noted."},{m:"That is still incorrect.",s:"This terminal does not forgive a second mistake.<br>Please disconnect."},{m:"Whoever you are, you should not be here.",s:"It is late. You should sleep.<br>Please disconnect."}],
-deptTop:"BUREAU ASSIGNMENT",deptTitle:"SELECT YOUR BUREAU",deptDesc:"Select the bureau you belong to within the Committee.",dept1:"1. PROCESSING BUREAU",dept2:"2. INVESTIGATION BUREAU",dept3:"3. LOGISTICS BUREAU",dept4:"4. SECURITY BUREAU"},
+deptTop:"BUREAU ASSIGNMENT",deptTitle:"SELECT YOUR BUREAU",deptDesc:"Select the bureau you belong to within the Committee.",dept1:"2. PROCESSING BUREAU",dept2:"1. INVESTIGATION BUREAU",dept3:"4. LOGISTICS BUREAU",dept4:"3. SECURITY BUREAU"},
 vi:{verifyTop:"CỔNG TRUY CẬP NỘI BỘ",restricted:"⚠ TRUY CẬP HẠN CHẾ",verifyTitle:"XÁC MINH DANH TÍNH",verifyDesc:"Hệ thống đã nhận diện một kết nối mới.<br>Vui lòng xác nhận tư cách truy cập trước khi tiếp tục.",verifyQ:"BẠN CÓ PHẢI LÀ NHÂN VIÊN CỦA ỦY BAN?",yes:"CÓ",no:"KHÔNG",ret:"← QUAY LẠI",loginTop:"XÁC THỰC NHÂN VIÊN",loginTitle:"ĐĂNG NHẬP NỘI BỘ",loginDesc:"Nhập họ tên đã đăng ký và mật khẩu của bạn.",nameLabel:"HỌ TÊN",passLabel:"MẬT KHẨU",hint:"GỢI Ý // MẬT KHẨU: 0000",submit:"XÁC THỰC",nameEmpty:"VUI LÒNG NHẬP TÊN CỦA BẠN.",exitHead:"TRUY CẬP BỊ TỪ CHỐI",disc:"NGẮT KẾT NỐI",welcome:"CHÀO MỪNG,",initMenu:"ĐANG KHỞI TẠO MENU CHÍNH",initSub:"VUI LÒNG KHÔNG ĐÓNG CỬA SỔ NÀY",
 exitsNo:[{m:"Bạn không thuộc phạm vi nhân sự được cấp quyền truy cập.",s:"Thiết bị này chỉ dành cho nhân viên đã đăng ký.<br>Kết nối của bạn đã được ghi nhận."},{m:"Bạn đã quay lại.",s:"Thiết bị này không trả lời câu hỏi.<br>Xin hãy ngắt kết nối."},{m:"Chúng tôi thấy bạn vẫn còn ở đây.",s:"Trễ rồi. Bạn nên đi ngủ.<br>Xin hãy ngắt kết nối."}],
 exitsPass:[{m:"Thông tin xác thực không hợp lệ.",s:"Dữ liệu bạn cung cấp không khớp với hồ sơ của chúng tôi.<br>Lần thử của bạn đã được ghi nhận."},{m:"Vẫn chưa đúng.",s:"Thiết bị này không tha thứ cho lần sai thứ hai.<br>Xin hãy ngắt kết nối."},{m:"Dù bạn là ai, bạn không nên ở đây.",s:"Trễ rồi. Bạn nên đi ngủ.<br>Xin hãy ngắt kết nối."}],
-deptTop:"PHÂN CÔNG CỤC",deptTitle:"CHỌN ĐƠN VỊ TRỰC THUỘC",deptDesc:"Xác định cục chuyên trách của bạn trong Ủy Ban.",dept1:"1. CỤC XỬ LÝ",dept2:"2. CỤC ĐIỀU TRA",dept3:"3. CỤC HẬU CẦN",dept4:"4. CỤC BẢO MẬT"}};
+deptTop:"PHÂN CÔNG CỤC",deptTitle:"CHỌN ĐƠN VỊ TRỰC THUỘC",deptDesc:"Xác định cục chuyên trách của bạn trong Ủy Ban.",dept1:"2. CỤC XỬ LÝ",dept2:"1. CỤC ĐIỀU TRA",dept3:"4. CỤC HẬU CẦN",dept4:"3. CỤC BẢO MẬT"}};
 
 const $=id=>document.getElementById(id),sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const REDUCED=matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -620,43 +676,99 @@ function syncContent(now){
 }
 function hideAll(){ghosts.forEach(o=>{o.g.style.display="none"});glow.style.display="none"}
 
+
 function renderBand(now){
-  if(!band||!tearEnabled||pauseGlitch){band=null;hideAll();rafId=null;return}
-  const vh=innerHeight,p=(now-band.t0)/band.dur;
-  if(p>=1){band=null;hideAll();rafId=null;return}
+  if(!band || !tearEnabled || pauseGlitch){
+    band = null;
+    hideAll();
+    rafId = null;
+    return;
+  }
+
+  const p = (now - band.t0) / band.dur;
+
+  if(p >= 1){
+    band = null;
+    hideAll();
+    rafId = null;
+    return;
+  }
+
   syncContent(now);
-  const y=band.mode==="roll"?-T.bandH+(vh+T.bandH)*p:band.y,sh=T.bandH/T.slices;
-  ghosts.forEach((o,i)=>{
-    const top=y+i*sh,clipTop=Math.max(0,top),clipBottom=Math.max(0,vh-(top+sh));
-    const env=Math.sin(Math.PI*(i+.5)/T.slices);
-    const dx=env*T.maxShift*band.amp*(Math.sin(now/60+i*1.7)*.7+(Math.random()-.5)*.8);
-    o.g.style.display="block";
-    o.g.style.clipPath=`inset(${clipTop}px 0 ${clipBottom}px 0)`;
-    o.inner.style.transform=`translateX(${dx}px)`;
+
+  ghosts.forEach((o, i) => {
+    const slice = band.slices[i];
+
+    if(!slice){
+      o.g.style.display = "none";
+      return;
+    }
+
+    const jitter = (Math.random() - 0.5) * slice.jitter;
+
+    o.g.style.display = "block";
+    o.g.style.clipPath =
+      `inset(${slice.y}px 0 ${innerHeight - slice.y - slice.h}px 0)`;
+
+    o.inner.style.transform =
+      `translateX(${slice.dx + jitter}px)`;
   });
-  glow.style.display="block";glow.style.transform=`translateY(${y}px)`;glow.style.height=T.bandH+"px";
-  rafId=requestAnimationFrame(renderBand);
+
+  // Không tạo dải sáng chạy theo các mảng tearing
+  glow.style.display = "none";
+
+  rafId = requestAnimationFrame(renderBand);
 }
 
 function startBand(newBand){
-  if(REDUCED||!tearEnabled||pauseGlitch||document.hidden)return;
-  band=newBand;lastSync=0;
-  if(!rafId)rafId=requestAnimationFrame(renderBand);
+  if(REDUCED || !tearEnabled || pauseGlitch || document.hidden) return;
+
+  band = newBand;
+  band.slices = [];
+
+  const count = 3 + Math.floor(Math.random() * 3);
+
+  for(let i = 0; i < count; i++){
+    const h = 25 + Math.random() * 100;
+    const y = Math.random() * (innerHeight - h);
+
+    band.slices.push({
+      y,
+      h,
+      dx: (Math.random() - 0.5) * T.maxShift * 2.5,
+      jitter: 8 + Math.random() * 22
+    });
+  }
+
+  lastSync = 0;
+
+  if(!rafId){
+    rafId = requestAnimationFrame(renderBand);
+  }
 }
 
-function burst(amp=1.8,dur){
-  if(REDUCED||!tearEnabled||pauseGlitch)return;
+function burst(amp = 1.8, dur){
+  if(REDUCED || !tearEnabled || pauseGlitch) return;
+
   spawnMTD();
-  startBand({mode:"burst",t0:performance.now(),dur:dur||(240+Math.random()*280),y:Math.random()*innerHeight*.8,amp});
-}
-window.tearBurst=burst;
 
-// Bộ đếm thời gian sọc cuộn định kỳ (tiết kiệm CPU gấp 10 lần so với chạy rAF liên tục)
-idleTimer=setInterval(()=>{
-  if(!tearEnabled||REDUCED||pauseGlitch||band||document.hidden)return;
-  if(Math.random()<.35)startBand({mode:"roll",t0:performance.now(),dur:T.rollTime,amp:1});
-  else if(Math.random()<.45)burst(1.4,260);
-},4500);
+  startBand({
+    t0: performance.now(),
+    dur: dur || (90 + Math.random() * 180),
+    amp
+  });
+}
+
+window.tearBurst = burst;
+
+// Tearing xuất hiện ngẫu nhiên, không còn sọc cuộn
+idleTimer = setInterval(() => {
+  if(!tearEnabled || REDUCED || pauseGlitch || band || document.hidden) return;
+
+  if(Math.random() < 0.38){
+    burst(1.5, 90 + Math.random() * 180);
+  }
+}, 1800);
 
 const OUT=360,IN=520;
 const F=(b,bl,x)=>`brightness(${b}) blur(${bl}px) drop-shadow(${-x}px 0 rgba(255,0,0,.55)) drop-shadow(${x}px 0 rgba(0,110,255,.55))`;
@@ -880,7 +992,7 @@ $("dept-investigate").addEventListener("click", async () => {
 
   function initTeamsDOM() {
     boxTeams.innerHTML = teamsData.map(t => {
-      const statusText = t.busy ? "[ĐANG THỰC THI]" : "[ĐANG NGHỈ]";
+      const statusText = t.busy ? "[ĐANG THỰC THI NHIỆM VỤ]" : "[ĐANG NGHỈ]";
       const statusColor = t.busy ? "var(--green)" : "var(--dim)";
       return `<div class="inv-team-row">• Đội ${t.id}: <span id="team-st-${t.id}" style="color:${statusColor};">${statusText}</span></div>`;
     }).join("");
@@ -895,7 +1007,7 @@ $("dept-investigate").addEventListener("click", async () => {
         t.nextToggle = currentTime + (Math.random() * 40 + 20) * 60 * 1000;
         const span = screenEl.querySelector(`#team-st-${t.id}`);
         if (span) {
-          span.textContent = t.busy ? "[ĐANG THỰC THI]" : "[ĐANG NGHỈ]";
+          span.textContent = t.busy ? "[ĐANG THỰC THI NHIỆM VỤ]" : "[ĐANG NGHỈ]";
           span.style.color = t.busy ? "var(--green)" : "var(--dim)";
         }
       }
@@ -923,8 +1035,8 @@ $("dept-investigate").addEventListener("click", async () => {
       return;
     }
 
-    const openList = list.filter(x => x.status === "open");
-    const doneList = list.filter(x => x.status === "done");
+   const doneList = list.filter(x => x.status === "done");
+const openList = list.filter(x => x.status !== "done");
     
     const makeCard = (item, done) => `
       <button type="button" class="dossier-card ${done ? "is-done" : ""}" data-id="${escapeHTML(item.id)}">
@@ -1027,7 +1139,7 @@ $("dept-investigate").addEventListener("click", async () => {
     try {
       const r = await fetch(DB_URL, {
         method: "POST",
-        headers: { "Content-Type": "text/plain" },
+        headers: { "Content-Type": "application/json" }, // <-- Đổi thành application/json cho khớp với Worker
         body: JSON.stringify({ title, loc, detail, author: author || "Ẩn danh" })
       });
       const result = await r.json().catch(() => ({}));
@@ -1154,7 +1266,7 @@ $("dept-investigate").addEventListener("click", async () => {
   initTeamsDOM();
   await loadFiles();
 
-  pollInterval = setInterval(() => { if (!document.hidden) loadFiles(); }, 12000);
+  pollInterval = setInterval(() => { if (!document.hidden) loadFiles(); }, 5000);
   teamInterval = setInterval(updateTeamsIndependent, 5000);
 
   screenEl.querySelector(".back").addEventListener("click", () => {
@@ -1182,6 +1294,60 @@ function goCustomScreen(screenEl) {
 
 $("dept-logistics").addEventListener("click",()=>alert("Đã vào: Cục Hậu Cần"));
 $("dept-security").addEventListener("click",()=>alert("Đã vào: Cục Bảo Mật"));
+
+// Logic Admin khung chọn ngôn ngữ & dịch chuyển trang
+let adminUnlocked = false;
+const langAdminBtn = $("lang-admin-btn"), langAdminBox = $("lang-admin-box");
+const langAdminUser = $("lang-admin-user"), langAdminPass = $("lang-admin-pass"), langAdminErr = $("lang-admin-err");
+
+langAdminBtn.addEventListener("click", () => {
+  langAdminBtn.classList.add("hidden");
+  langAdminBox.classList.remove("hidden");
+  langAdminErr.textContent = "";
+  langAdminUser.value = "";
+  langAdminPass.value = "";
+  langAdminUser.focus();
+});
+
+$("lang-admin-cancel").addEventListener("click", () => {
+  langAdminBox.classList.add("hidden");
+  langAdminBtn.classList.remove("hidden");
+});
+
+function checkLangAdmin() {
+  if (langAdminUser.value.trim().toLowerCase() === "mtd" && langAdminPass.value === "666") {
+    adminUnlocked = true;
+    langAdminBox.classList.add("hidden");
+    $("admin-dock").classList.remove("hidden");
+  } else {
+    langAdminErr.textContent = "SAI TÀI KHOẢN HOẶC MẬT KHẨU!";
+    langAdminPass.value = "";
+    langAdminPass.focus();
+  }
+}
+
+$("lang-admin-ok").addEventListener("click", checkLangAdmin);
+langAdminUser.addEventListener("keydown", e => { if (e.key === "Enter") langAdminPass.focus(); });
+langAdminPass.addEventListener("keydown", e => { if (e.key === "Enter") checkLangAdmin(); });
+
+$("admin-toggle").addEventListener("click", () => {
+  const dock = $("admin-dock");
+  dock.classList.toggle("collapsed");
+  $("admin-arrow").textContent = dock.classList.contains("collapsed") ? "[+]" : "[−]";
+});
+
+document.querySelectorAll("[data-warp]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const target = btn.dataset.warp;
+    const inv = $("investigate-screen");
+    if (inv) inv.remove();
+    if (target === "investigate") {
+      $("dept-investigate").click();
+    } else {
+      go(target);
+    }
+  });
+});
 
 applyLang();boot();
 </script>
