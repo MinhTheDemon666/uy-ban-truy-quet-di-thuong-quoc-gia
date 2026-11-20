@@ -52,7 +52,7 @@ const PROCESSING_I18N = {
     stProgress: "IN PROGRESS",
     stDone: "DONE",
     noDesc: "No description provided.",
-    backBtn: "← RETURN TO DEPARTMENT",
+    backBtn: "← RETURN",
     claimBtn: "ACCEPT DOSSIER",
     completeBtn: "COMPLETE DOSSIER",
     enterName: "Enter your name (optional). Leave blank to use your unit designation:",
